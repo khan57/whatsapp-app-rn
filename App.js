@@ -17,7 +17,7 @@ import Login from './src/screens/Login';
 import Home from './src/screens/Home';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Chat from './src/screens/Chat';
-
+import Profile from './src/screens/Profile';
 //
 const Stack = createStackNavigator();
 const Navigation = props => {
@@ -62,6 +62,11 @@ const Navigation = props => {
             options={({route}) => ({title: route.params.name})}
             name="chat"
             component={props => <Chat {...props} user={user} />}
+          />
+           <Stack.Screen
+            options={({route}) => ({title: route.params.name})}
+            name="profile"
+            component={props => <Profile {...props} user={user} />}
           />
         </>
       ) : (

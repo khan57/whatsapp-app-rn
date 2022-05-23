@@ -20,7 +20,7 @@ export default function Signup(props) {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [image, setImage] = useState(null);
-  const [showNext, setShowNext] = useState(null);
+  const [showNext, setShowNext] = useState(true);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     // alert('Signup called');

@@ -23,10 +23,13 @@ export default function Home(props) {
     console.log(allUsers);
   };
   const RenderCard = ({item}) => {
+    console.log('================================================', item);
     return (
       <TouchableOpacity
         style={styles.myCard}
-        onPress={() => props.navigation.navigate('chat', {name: item.name})}>
+        onPress={() =>
+          props.navigation.navigate('chat', {name: item.name, uid: item.uid})
+        }>
         <Image source={{uri: item.pic}} style={styles.image} />
         <View>
           <Text style={styles.text}>{item.name}</Text>
