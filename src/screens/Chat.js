@@ -18,10 +18,36 @@ export default function Chat({user, route}) {
     const allMessages = querySnap.docs.map(docSnap => {
       return {
         ...docSnap.data(),
-        createdAt: docSnap.data().createdAt.toDate(),
+        createdAt: docSnap.data().createdAt
+          ? docSnap.data().createdAt.toDate()
+          : new Date(),
       };
     });
     setMessages(allMessages);
+  };
+
+  const realTimeChat = async () => {
+    const docId = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+    const messageRef =  firestore()
+      .collection('chatrooms')
+      .doc(docId)
+      .collection('messages')
+      .orderBy('createdAt', 'desc');
+      
+
+    messageRef.onSnapshot(querySnap => {
+      const allMessages = querySnap.docs.map(docSnap => {
+        
+        return {
+          ...docSnap.data(),
+          createdAt:
+            docSnap.data().createdAt !== null
+              ? docSnap.data().createdAt.toDate()
+              : new Date(),
+        };
+      });
+      setMessages(allMessages);
+    });
   };
   useEffect(() => {
     // setMessages([
@@ -36,7 +62,8 @@ export default function Chat({user, route}) {
     //     },
     //   },
     // ]);
-    getMessages()
+    // getMessages();
+    realTimeChat();
   }, []);
   const onSend = useCallback((messageArray = []) => {
     const [msg] = messageArray;
@@ -44,7 +71,7 @@ export default function Chat({user, route}) {
       ...msg,
       sentBy: user.uid,
       sentTo: uid,
-      createdAt: new Date(),
+      // createdAt: new Date(),
     };
 
     console.log({myMessage});
