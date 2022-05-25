@@ -2,7 +2,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, Bubble, InputToolbar} from 'react-native-gifted-chat';
 export default function Chat({user, route}) {
   const [messages, setMessages] = useState([]);
   const {uid} = route.params;
@@ -26,18 +26,28 @@ export default function Chat({user, route}) {
     setMessages(allMessages);
   };
 
+  const renderInputToolbar = props => {
+    //Add the extra styles via containerStyle
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{borderTopWidth: 1.5, borderTopColor: 'green'}}
+        textInputStyle={{color: 'black', fontSize: 16}}
+      />
+    );
+  };
+
   const realTimeChat = async () => {
     const docId = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
-    const messageRef =  firestore()
+    const messageRef = firestore()
       .collection('chatrooms')
       .doc(docId)
       .collection('messages')
       .orderBy('createdAt', 'desc');
-      
 
     messageRef.onSnapshot(querySnap => {
       const allMessages = querySnap.docs.map(docSnap => {
-        
+        console.log({...docSnap.data()});
         return {
           ...docSnap.data(),
           createdAt:
@@ -87,12 +97,25 @@ export default function Chat({user, route}) {
       .add({...myMessage, createdAt: firestore.FieldValue.serverTimestamp()});
   }, []);
   return (
-    <GiftedChat
-      messages={messages}
-      onSend={messages => onSend(messages)}
-      user={{
-        _id: user.uid,
-      }}
-    />
+    <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
+      <GiftedChat
+        renderInputToolbar={renderInputToolbar}
+        messages={messages}
+        onSend={messages => onSend(messages)}
+        user={{
+          _id: user.uid,
+        }}
+        renderBubble={props => (
+          <Bubble
+            {...props}
+            wrapperStyle={{
+              right: {
+                backgroundColor: 'green',
+              },
+            }}
+          />
+        )}
+      />
+    </View>
   );
 }
