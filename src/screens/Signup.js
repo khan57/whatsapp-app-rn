@@ -44,6 +44,7 @@ export default function Signup(props) {
         email: result.user.email,
         uid: result.user.uid,
         pic: image,
+        status:"online"
       });
       setLoading(false);
     } catch (error) {

@@ -47,7 +47,6 @@ export default function Chat({user, route}) {
 
     messageRef.onSnapshot(querySnap => {
       const allMessages = querySnap.docs.map(docSnap => {
-        console.log({...docSnap.data()});
         return {
           ...docSnap.data(),
           createdAt:

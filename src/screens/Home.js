@@ -20,15 +20,20 @@ export default function Home(props) {
       .get();
     const allUsers = querySnapShot.docs.map(docSnap => docSnap.data());
     setUsers(allUsers);
-    console.log(allUsers);
   };
   const RenderCard = ({item}) => {
-    console.log('================================================', item);
     return (
       <TouchableOpacity
         style={styles.myCard}
         onPress={() =>
-          props.navigation.navigate('chat', {name: item.name, uid: item.uid})
+          props.navigation.navigate('chat', {
+            name: item.name,
+            uid: item.uid,
+            status:
+              typeof item.status !== 'string'
+                ? item.status.toDate().toString()
+                : item.status,
+          })
         }>
         <Image source={{uri: item.pic}} style={styles.image} />
         <View>

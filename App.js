@@ -18,6 +18,7 @@ import Home from './src/screens/Home';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Chat from './src/screens/Chat';
 import Profile from './src/screens/Profile';
+import firestore from '@react-native-firebase/firestore';
 //
 const Stack = createStackNavigator();
 const Navigation = props => {
@@ -25,6 +26,9 @@ const Navigation = props => {
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(userExists => {
       if (userExists) {
+        firestore().collection('users').doc(userExists.uid).update({
+          status: 'online',
+        });
         setUser(userExists);
       } else {
         setUser('');
@@ -52,18 +56,38 @@ const Navigation = props => {
                   size={34}
                   color="green"
                   style={{marginRight: 10}}
-                  onPress={() => auth().signOut()}
+                  onPress={() => {
+                    firestore()
+                      .collection('users')
+                      .doc(user.uid)
+                      .update({
+                        status: firestore.FieldValue.serverTimestamp(),
+                      })
+                      .then(() => {
+                        auth().signOut();
+                      });
+                  }}
                 />
               ),
               title: 'WhatsApp',
             }}
           />
           <Stack.Screen
-            options={({route}) => ({title: route.params.name})}
+            options={({route}) => ({
+              title: (
+                <View>
+                  <Text
+                    style={{fontWeight: 'bold', fontSize: 20, color: 'green'}}>
+                    {route.params.name}
+                  </Text>
+                  <Text>{route.params.status}</Text>
+                </View>
+              ),
+            })}
             name="chat"
             component={props => <Chat {...props} user={user} />}
           />
-           <Stack.Screen
+          <Stack.Screen
             options={({route}) => ({title: route.params.name})}
             name="profile"
             component={props => <Profile {...props} user={user} />}
